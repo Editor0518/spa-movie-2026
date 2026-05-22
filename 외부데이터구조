@@ -1,0 +1,15 @@
+{
+    "page":1,
+    "results":[
+        {
+            "title":"파묘",
+            "original_title":"Exhuma",
+            "overview":"어느 날, 한 남자가 자신의 아버지의 무덤을 파헤친다.",
+            "poster_path":"/poster.jpg",
+            "release_date":"2024-07-15",
+            "vote_average":7.5
+        }
+    ],
+    "total_pages":44211,
+    "total_results":884210
+}
