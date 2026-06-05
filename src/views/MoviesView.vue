@@ -17,17 +17,19 @@ onMounted(() => {
             <h1>국내 극장 화제작 (인기순)</h1>
             <p class="sub-title">2025년 이후 국내 정식 개봉한 실시간 인기 상영작.</p>
         </div>
-        <div v-if="store.isLoading">실시간 국내 개봉작 데이터를 싣고 오는 중입니다...</div>
-        <div v-else-if="store.errorMessage">
+        <div v-if="store.isLoading" class="status-message loading">
+            실시간 국내 개봉작 데이터를 싣고 오는 중입니다...
+        </div>
+        <div v-else-if="store.errorMessage" class="status-message error">
             {{ store.errorMessage }}
         </div>
         <div v-else class="movie-list">
             <div v-for="movie in store.movies" :key="movie.id" class="movie-card">
                 <img 
-                v-if="movie.poster_path"
-                :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`" 
-                :alt="movie.title"
-                class="poster"
+                    v-if="movie.poster_path"
+                    :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`" 
+                    :alt="movie.title"
+                    class="poster"
                 />
                 <div v-else class="poster-placeholder">이미지 준비 중</div>
                 <div class="card-content">
@@ -49,6 +51,12 @@ onMounted(() => {
                         {{ movie.isFavorite ? '찜 해제' : '찜하기' }}
                     </button>
                 </div>
+                <!--12주차 라우터링크 추가-->
+                <RouterLink
+                    :to="`/movies/${movie.id}`"
+                    class="stretched-link"
+                    :aria-label="`${movie.title} 상세 정보 보기`"
+                ></RouterLink>
             </div>
         </div> 
     </main>
@@ -76,6 +84,7 @@ onMounted(() => {
     gap: 30px;
 }
 .movie-card{
+    position: relative;
     border-radius: 12px;
     overflow: hidden;
     background: white;
@@ -138,6 +147,8 @@ onMounted(() => {
    flex-grow: 1;
 }
 .fav-btn{
+    position: relative;
+    z-index: 2;
     width: 100%;
     padding: 12px;
     cursor: pointer;
@@ -153,5 +164,13 @@ onMounted(() => {
 .fav-btn.active{
     background: #ff4757;
     color: white;
+}
+.stretched-link {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
 }
 </style>
