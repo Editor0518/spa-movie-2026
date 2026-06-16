@@ -4,6 +4,7 @@ import { RouterLink, RouterView } from 'vue-router';
 
 //전역 비동기 세션 데이터가 들어있는 스토어 임포트
 import { useMovieStore } from './stores/movieStore';
+import { useFavoritesStore } from './stores/favorites';
 
 const store = useMovieStore();
 

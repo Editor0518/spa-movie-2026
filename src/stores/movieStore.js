@@ -1,19 +1,20 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import axios from 'axios';
+import { useFavoritesStore } from './favorites';
 
 export const useMovieStore = defineStore('movies', () => {
     // state
     const movies = ref([]);
-
-    // session storage
-    const favorites = ref(JSON.parse(sessionStorage.getItem('favorites')) || []);
 
     //ux and exception handling
     const isLoading = ref(false);
     const errorMessage = ref('');
 
     const selectedMovie = ref(null);
+
+    // 2. 외부 favorites 스토어 가져오기
+    const favoritesStore = useFavoritesStore();
 
     const fetchMovies = async () => {
         isLoading.value = true;
@@ -37,10 +38,9 @@ export const useMovieStore = defineStore('movies', () => {
             });
             const fetchedMovies = response.data.results;
 
-            //async session storage update
+            // 3. favoritesStore에 저장된 목록과 비교하여 찜 상태 동기화
             fetchedMovies.forEach(movie => {
-                const isAlreadyFavorite = favorites.value.some(fav => fav.id === movie.id);
-                movie.isFavorite = isAlreadyFavorite;
+                movie.isFavorite = favoritesStore.favoriteMovies.some(fav => fav.id === movie.id);
             });
 
             movies.value = fetchedMovies;
@@ -78,22 +78,24 @@ export const useMovieStore = defineStore('movies', () => {
             isLoading.value = false;
         }
     };
-    
-    //찜하기 토글과 세션 스토리지 반영 로직
-    const toggleFavorite = (movieId) => {
-        const movie = movies.value.find(m => m.id === movieId);
-        if (movie) {
-            movie.isFavorite = !movie.isFavorite;
 
-            //하트 활성화 시 전역 찜 목록 금고 배열에 현재 영화 객체 추가
-            if (movie.isFavorite) {
-                favorites.value.push(movie);
-            } else {
-                favorites.value = favorites.value.filter(m => m.id !== movieId);
-            }
-            sessionStorage.setItem('favorites', JSON.stringify(favorites.value));
+    // 5. 찜하기 토글 시 favoritesStore의 액션을 호출하도록 변경
+    const toggleFavorite = (movie) => {
+        // 영화 목록 스토어 내부 상태 토글
+        const targetMovie = movies.value.find(m => m.id === movie.id);
+        if (targetMovie) {
+            targetMovie.isFavorite = !targetMovie.isFavorite;
         }
+        // 상세페이지 전용 상태 토글
+        if (selectedMovie.value && selectedMovie.value.id === movie.id) {
+            selectedMovie.value.isFavorite = !selectedMovie.value.isFavorite;
+        }
+
+        // 실제 로컬스토리지 저장 및 전역 관리는 favoritesStore에 위임
+        // (favorites.js의 toggleFavorite은 영화 객체 전체를 인자로 받으므로 객체를 넘겨줍니다)
+        favoritesStore.toggleFavorite(movie);
     };
+
     return {
         movies,
         favorites,

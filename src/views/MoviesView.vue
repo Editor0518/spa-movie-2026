@@ -44,7 +44,7 @@ onMounted(() => {
                         {{ movie.overview ? movie.overview.substring(0,60) + '...' : '국내에 등록된 줄거리 요약 정보가 없습니다.' }}
                     </p>
                     <button 
-                    @click="store.toggleFavorite(movie.id)"
+                    @click="store.toggleFavorite(movie)"
                     :class="{active:movie.isFavorite}"
                     class="fav-btn"
                     >
