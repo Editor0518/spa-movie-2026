@@ -20,7 +20,7 @@ export const useMovieStore = defineStore('movies', () => {
         errorMessage.value = '';
 
         try {
-            const API_KEY = 'ddfea16a4f43a0aad789902d6c023742';
+            const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 
             const movieParams = {
                 api_key: API_KEY,
@@ -57,7 +57,7 @@ export const useMovieStore = defineStore('movies', () => {
         selectedMovie.value = null; //영화 목록 새로고침 시 상세보기 초기화
 
         try {
-            const API_KEY = 'ddfea16a4f43a0aad789902d6c023742';
+            const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
             const url = `https://api.themoviedb.org/3/movie/${movieId}`;
 
             const response = await axios.get(url, { 

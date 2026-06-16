@@ -59,7 +59,7 @@ const generateAIReview = async() => {
             {
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`
+                    'Authorization': `Bearer ${import.meta.env.VITE_AI_API_KEY}`
                 }
             });
         aiReview.value = response.data.choices[0].message.content;
