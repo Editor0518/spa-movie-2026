@@ -98,7 +98,6 @@ export const useMovieStore = defineStore('movies', () => {
 
     return {
         movies,
-        favorites,
         isLoading,
         errorMessage,
         fetchMovies,

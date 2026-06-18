@@ -3,24 +3,10 @@ import { computed } from 'vue';
 import { RouterLink, RouterView } from 'vue-router';
 
 //전역 비동기 세션 데이터가 들어있는 스토어 임포트
-import { useMovieStore } from './stores/movieStore';
 import { useFavoritesStore } from './stores/favorites';
 
-const store = useMovieStore();
+const favorites = useFavoritesStore();
 
-const totalFavoritesCount= computed(() => {
-  return store.favorites.length;
-});
-
-const averageFavoritesRating = computed(() => {
-  if (store.favorites.length === 0) return '0.0';
-
-  const totalRatingSum = store.favorites.reduce((accumulator, movie) => {
-    return accumulator + movie.vote_average;
-  }, 0);
-  const calculatedAverage = totalRatingSum / store.favorites.length;
-  return calculatedAverage.toFixed(1);
-});
 
 </script>
 
@@ -38,11 +24,11 @@ const averageFavoritesRating = computed(() => {
       <div class="header-dashboard">
         <div class="dashboard-badge favorite-count">
           <span class="badge-label">찜한 작품</span>
-          <span class="badge-value">{{ totalFavoritesCount }}개</span>
+          <span class="badge-value">{{ favorites.totalFavorites }}개</span>
         </div>
         <div class="dashboard-badge average-rating"">
           <span class="badge-label">평균 평점:</span>
-          <span class="badge-value">{{ averageFavoritesRating }} / 10</span>
+          <span class="badge-value">{{ favorites.averageRating }} / 10</span>
         </div>
       </div>
     </header>

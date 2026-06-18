@@ -10,8 +10,8 @@ export const useFavoritesStore = defineStore('favorites', () => {
     const totalFavorites = computed(() => favoriteMovies.value.length);
 
     const averageRating = computed(() => {
-        if (favoriteMovies.value.length === 0) return 0;
-        const sum = favoriteMovies.value.reduce((sum, movie) => sum + movie.rating, 0);
+        if (favoriteMovies.value.length === 0) return '0.0';
+        const sum = favoriteMovies.value.reduce((sum, movie) => sum + (movie.vote_average || 0), 0);
         return (sum / favoriteMovies.value.length).toFixed(1);
     });
 
