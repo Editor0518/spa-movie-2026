@@ -79,7 +79,7 @@ const generateAIReview = async() => {
     <main v-if="store.selectedMovie" class="detail-page">
         <div class="backdrop-layer"
             :style="{backgroundImage: `url(https://image.tmdb.org/t/p/original${store.selectedMovie.backdrop_path})`}">
-            <div class="back-curtain"></div>
+            <div class="black-curtain"></div>
         </div>
         <div class="content-container">
             <button @click="goBack" class="back-floating-btn">영화 목록으로 돌아가기</button>
@@ -87,7 +87,7 @@ const generateAIReview = async() => {
                 <div class="poster-zone">
                     <img v-if="store.selectedMovie?.poster_path"
                         :src="`https://image.tmdb.org/t/p/w500${store.selectedMovie.poster_path}`"
-                        alt=" main-poster"
+                        alt=" main-poster" class="main-poster"
                         /><div v-else class="poster-placeholder">포스터 이미지 없음</div>
                 </div>
                 <div class="info-zone">
@@ -112,22 +112,21 @@ const generateAIReview = async() => {
                             <span class="f-label">글로벌 흥행 수익</span>
                             <span class="f-value revenue-color">{{ formattedRevenue }}</span>
                         </div>
-                        <div class="synopsis-container">
-                            <h3 class="synopsis-title">시놉시스 줄거리</h3>
-                            <p class="synopsis-text">
-                                {{ store.selectedMovie?.overview || '줄거리가 없습니다.'}}
-                            </p>
-                        </div>
-
-                        <hr class="divider">
-                        <div class="ai-section">
-                            <button @click="generateAIReview" class="ai-btn" :disabled="isAiLoading">
-                                {{ isAiLoading ? '생성 중...' : 'AI 맞춤 추천사 듣기' }}
-                            </button>
-
-                            <div v-if="aiReview" class="ai-result-box">
-                                <p>{{ aiReview }}</p>
-                            </div>
+                        
+                    </div>
+                    <div class="synopsis-container">
+                        <h3 class="synopsis-title">시놉시스 줄거리</h3>
+                        <p class="synopsis-text">
+                            {{ store.selectedMovie?.overview || '줄거리가 없습니다.'}}
+                        </p>
+                    </div>
+                    <hr class="divider">
+                    <div class="ai-section">
+                        <button @click="generateAIReview" class="ai-btn" :disabled="isAiLoading">
+                            {{ isAiLoading ? '생성 중...' : 'AI 맞춤 추천사 듣기' }}
+                        </button>
+                        <div v-if="aiReview" class="ai-result-box">
+                            <p>{{ aiReview }}</p>
                         </div>
                     </div>
                 </div>

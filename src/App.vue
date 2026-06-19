@@ -13,22 +13,24 @@ const favorites = useFavoritesStore();
 <template>
   <div class="app-container">
     <header class="main-header">
-      <RouterLink to="/" class="logo-zone">
-        <span class="logo-icon">M</span>
-        <h1 class="logo-text">NETVUE</h1>
-      </RouterLink>
-      <nav class="nav-menu">
-        <RouterLink to="/" class="nav-item">홈</RouterLink>
-        <RouterLink to="/movies" class="nav-item">영화 목록</RouterLink>
-      </nav>
-      <div class="header-dashboard">
-        <div class="dashboard-badge favorite-count">
-          <span class="badge-label">찜한 작품</span>
-          <span class="badge-value">{{ favorites.totalFavorites }}개</span>
-        </div>
-        <div class="dashboard-badge average-rating"">
-          <span class="badge-label">평균 평점:</span>
-          <span class="badge-value">{{ favorites.averageRating }} / 10</span>
+      <div class="header-content">
+        <RouterLink to="/" class="logo-zone">
+          <span class="logo-icon">M</span>
+          <h1 class="logo-text">NETVUE</h1>
+        </RouterLink>
+        <nav class="nav-menu">
+          <RouterLink to="/" class="nav-item">홈</RouterLink>
+          <RouterLink to="/movies" class="nav-item">영화 목록</RouterLink>
+        </nav>
+        <div class="header-dashboard">
+          <div class="dashboard-badge favorite-count">
+            <span class="badge-label">찜한 작품</span>
+            <span class="badge-value">{{ favorites.totalFavorites }}개</span>
+          </div>
+          <div class="dashboard-badge average-rating"">
+            <span class="badge-label">평균 평점:</span>
+            <span class="badge-value">{{ favorites.averageRating }} / 10</span>
+          </div>
         </div>
       </div>
     </header>
