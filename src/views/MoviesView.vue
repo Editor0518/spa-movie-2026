@@ -16,6 +16,39 @@ onMounted(() => {
         <div class="header-section">
             <h1>국내 극장 화제작 (인기순)</h1>
             <p class="sub-title">2025년 이후 국내 정식 개봉한 실시간 인기 상영작.</p>
+
+            <div class="list-search-zone">
+                <input 
+                    v-model="store.searchQuery"
+                    type="text" 
+                    placeholder="영화 제목으로 필터링..." 
+                    class="search-input"
+                />
+            </div>
+
+            <div class="sort-buttons-zone">
+                <button 
+                    @click="store.changeSort('title')" 
+                    :class="{ active: store.sortKey === 'title' }"
+                    class="sort-btn"
+                >
+                    제목순 {{ store.sortKey === 'title' ? (store.sortOrder === 'asc' ? '▲' : '▼') : '' }}
+                </button>
+                <button 
+                    @click="store.changeSort('release_date')" 
+                    :class="{ active: store.sortKey === 'release_date' }"
+                    class="sort-btn"
+                >
+                    개봉일순 {{ store.sortKey === 'release_date' ? (store.sortOrder === 'asc' ? '▲' : '▼') : '' }}
+                </button>
+                <button 
+                    @click="store.changeSort('vote_average')" 
+                    :class="{ active: store.sortKey === 'vote_average' }"
+                    class="sort-btn"
+                >
+                    평점순 {{ store.sortKey === 'vote_average' ? (store.sortOrder === 'asc' ? '▲' : '▼') : '' }}
+                </button>
+            </div>
         </div>
         <div v-if="store.isLoading" class="status-message loading">
             실시간 국내 개봉작 데이터를 싣고 오는 중입니다...
@@ -28,7 +61,7 @@ onMounted(() => {
         </div>
 
         <div v-else class="movie-list">
-            <div v-for="movie in store.movies" :key="movie.id" class="movie-card">
+            <div v-for="movie in store.sortedAndFilteredMovies" :key="movie.id" class="movie-card">
                 <img 
                     v-if="movie.poster_path"
                     :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`" 
