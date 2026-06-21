@@ -15,18 +15,19 @@ const favorites = useFavoritesStore();
     <header class="main-header">
       <div class="header-content">
         <RouterLink to="/" class="logo-zone">
-          <span class="logo-icon">M</span>
+          <span class="logo-icon"><img class="logo-img" src="/src/assets/logo.svg" alt="NETVUE Logo" /></span>
           <h1 class="logo-text">NETVUE</h1>
         </RouterLink>
         <nav class="nav-menu">
           <RouterLink to="/" class="nav-item">홈</RouterLink>
           <RouterLink to="/movies" class="nav-item">영화 목록</RouterLink>
+          <RouterLink to="/favorites" class="nav-item">찜 목록</RouterLink>
         </nav>
         <div class="header-dashboard">
-          <div class="dashboard-badge favorite-count">
+          <RouterLink to="/favorites" class="dashboard-badge favorite-count-btn">
             <span class="badge-label">찜한 작품</span>
             <span class="badge-value">{{ favorites.totalFavorites }}개</span>
-          </div>
+          </RouterLink>
           <div class="dashboard-badge average-rating"">
             <span class="badge-label">평균 평점:</span>
             <span class="badge-value">{{ favorites.averageRating }} / 10</span>
@@ -73,6 +74,10 @@ const favorites = useFavoritesStore();
 }
 .logo-icon {
   font-size: 28px;
+}
+.logo-img {
+  height: 19px;
+  margin-right: 2px;
 }
 .logo-text {
   font-size: 22px;

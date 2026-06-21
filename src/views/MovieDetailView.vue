@@ -8,8 +8,6 @@ const route = useRoute();
 const router = useRouter();
 const store = useMovieStore();
 
-const movieId = route.params.id;
-
 onMounted(() => {
     const movieId = route.params.id;
     store.fetchMovieDetail(movieId);

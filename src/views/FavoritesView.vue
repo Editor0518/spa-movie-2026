@@ -1,30 +1,34 @@
 <script setup>
 import { onMounted } from 'vue';
 import { useMovieStore } from '../stores/movieStore.js';
+import { useFavoritesStore } from '../stores/favorites.js';
 
 //중앙 금고
 const store = useMovieStore();
+const favoritesStore = useFavoritesStore();
 
 onMounted(() => {
     store.fetchMovies();
 });
 </script>
 
-
 <template>
     <main class="page">
         <div class="header-section">
-            <h1>국내 극장 화제작 (인기순)</h1>
-            <p class="sub-title">2025년 이후 국내 정식 개봉한 실시간 인기 상영작.</p>
+            <h1>찜한 영화</h1>
+            <p class="sub-title">찜한 영화 목록을 확인할 수 있습니다.</p>
         </div>
-        <div v-if="store.isLoading" class="status-message loading">
-            실시간 국내 개봉작 데이터를 싣고 오는 중입니다...
+        <div v-if="favoritesStore.totalFavorites === 0" class="status-message loading">
+            찜한 영화가 없습니다.
+        </div>
+        <div v-else-if="store.isLoading" class="status-message loading">
+            찜한 실시간 국내 개봉작 데이터를 싣고 오는 중입니다...
         </div>
         <div v-else-if="store.errorMessage" class="status-message error">
             {{ store.errorMessage }}
         </div>
         <div v-else class="movie-list">
-            <div v-for="movie in store.movies" :key="movie.id" class="movie-card">
+            <div v-for="movie in favoritesStore.favoriteMovies" :key="movie.id" class="movie-card">
                 <img 
                     v-if="movie.poster_path"
                     :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`" 
