@@ -23,6 +23,10 @@ onMounted(() => {
         <div v-else-if="store.errorMessage" class="status-message error">
             {{ store.errorMessage }}
         </div>
+        <div v-else-if="store.filteredMovies.length === 0" class="no-results">
+            '{{ store.searchQuery }}' 검색 조건과 일치하는 영화가 존재하지 않습니다.
+        </div>
+
         <div v-else class="movie-list">
             <div v-for="movie in store.movies" :key="movie.id" class="movie-card">
                 <img 
@@ -171,5 +175,61 @@ onMounted(() => {
     right: 0;
     bottom: 0;
     z-index: 1;
+}
+
+
+.list-search-zone {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+}
+.search-input {
+    width: 100%;
+    max-width: 400px;
+    padding: 10px 16px;
+    font-size: 14px;
+    border: 2px solid #ddd;
+    border-radius: 20px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+.search-input:focus {
+    border-color: #ff4757;
+}
+.no-results {
+    text-align: center;
+    padding: 80px 20px;
+    color: #7f8c8d;
+    font-size: 16px;
+    font-weight: bold;
+}
+/* [추가 미션 3] 다중 정렬 선택 영역 및 토글 버튼 컴포넌트 CSS 추가 */
+.sort-buttons-zone {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+.sort-btn {
+    padding: 8px 18px;
+    font-size: 13px;
+    font-weight: 700;
+    background-color: #ffffff;
+    color: #57606f;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+}
+.sort-btn:hover {
+    background-color: #f1f2f6;
+    color: #2f3542;
+}
+.sort-btn.active {
+    background-color: #ff4757;
+    color: #ffffff;
+    border-color: #ff4757;
+    box-shadow: 0 4px 10px rgba(255, 71, 87, 0.3);
 }
 </style>

@@ -60,7 +60,11 @@ const generateAIReview = async() => {
                     'Authorization': `Bearer ${import.meta.env.VITE_AI_API_KEY}`
                 }
             });
-        aiReview.value = response.data.choices[0].message.content;
+        
+        // AI 맞춤 추천사 결과에서 AI 특유의 '**'가 너무 거슬려서 제거했음.
+        const result = response.data.choices[0].message.content.replace(/\*\*/g, " ");
+            
+        aiReview.value = result;
 
     } catch (error) {
         console.error('AI 호출 에러:', error);

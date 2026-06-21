@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import axios from 'axios';
 import { useFavoritesStore } from './favorites';
 
@@ -15,6 +15,18 @@ export const useMovieStore = defineStore('movies', () => {
 
     // 2. 외부 favorites 스토어 가져오기
     const favoritesStore = useFavoritesStore();
+
+    const searchQuery = ref('');
+
+    const filteredMovies = computed(() => {
+        if (!searchQuery.value.trim()) {
+            return movies.value;
+        }
+        // 대소문자 구분을 없애고 영화 제목(title)에 검색어가 포함되었는지 판별
+        return movies.value.filter(movie => 
+            movie.title.toLowerCase().includes(searchQuery.value.toLowerCase())
+        );
+    });
 
     const fetchMovies = async () => {
         isLoading.value = true;
@@ -103,6 +115,9 @@ export const useMovieStore = defineStore('movies', () => {
         fetchMovies,
         toggleFavorite,
         selectedMovie,
-        fetchMovieDetail
+        fetchMovieDetail,
+        // 검색어 상태 및 필터링된 영화 목록 내보내기
+        searchQuery,
+        filteredMovies,
     };
 });
