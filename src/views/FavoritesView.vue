@@ -1,91 +1,73 @@
 <script setup>
-import { onMounted } from 'vue';
-import { useMovieStore } from '../stores/movieStore.js';
+import { onMounted, ref, computed } from 'vue';
 import { useFavoritesStore } from '../stores/favorites.js';
 
-//중앙 금고
-const store = useMovieStore();
 const favoritesStore = useFavoritesStore();
 
-onMounted(() => {
-    store.fetchMovies();
+/* ==========================================================
+   [추가 미션 4] 찜 목록 전용 20개 구간 슬라이싱 페이지네이션
+   ========================================================== */
+const currentPage = ref(1);
+const itemsPerPage = 10;
+
+const totalPages = computed(() => {
+    return Math.ceil(favoritesStore.favoriteMovies.length / itemsPerPage);
 });
+
+const paginatedFavorites = computed(() => {
+    const start = (currentPage.value - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    return favoritesStore.favoriteMovies.slice(start, end);
+});
+
 </script>
 
 <template>
     <main class="page">
         <div class="header-section">
-            <h1>찜한 영화</h1>
-            <p class="sub-title">찜한 영화 목록을 확인할 수 있습니다.</p>
+            <h1>나의 찜 목록</h1>
+            <p class="sub-title">관심 작품으로 등록하신 영화 보관함입니다.</p>
         </div>
-        <div v-if="favoritesStore.totalFavorites === 0" class="status-message loading">
-            찜한 영화가 없습니다.
+
+        <div v-if="favoritesStore.favoriteMovies.length === 0" class="no-results">
+            아직 찜한 영화가 없습니다. 영화 목록에서 마음에 드는 작품을 추가해 보세요!
         </div>
-        <div v-else-if="store.isLoading" class="status-message loading">
-            찜한 실시간 국내 개봉작 데이터를 싣고 오는 중입니다...
-        </div>
-        <div v-else-if="store.errorMessage" class="status-message error">
-            {{ store.errorMessage }}
-        </div>
-        <div v-else class="movie-list">
-            <div v-for="movie in favoritesStore.favoriteMovies" :key="movie.id" class="movie-card">
-                <img 
-                    v-if="movie.poster_path"
-                    :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`" 
-                    :alt="movie.title"
-                    class="poster"
-                />
-                <div v-else class="poster-placeholder">이미지 준비 중</div>
-                <div class="card-content">
-                    <h3 class="title">{{ movie.title }}</h3>
-                    <p class="release-date" v-if="movie.release_date">
-                        개봉일: {{ movie.release_date }}
-                    </p>
-                    <p class="rating" v-if="movie.rating">
-                        평점: {{ movie.vote_average.toFixed(1) }} / 10
-                    </p>
-                    <p class="overview">
-                        {{ movie.overview ? movie.overview.substring(0,60) + '...' : '국내에 등록된 줄거리 요약 정보가 없습니다.' }}
-                    </p>
-                    <button 
-                    @click="store.toggleFavorite(movie)"
-                    :class="{active:movie.isFavorite}"
-                    class="fav-btn"
-                    >
-                        {{ movie.isFavorite ? '찜 해제' : '찜하기' }}
-                    </button>
+
+        <div v-else>
+            <div class="movie-list">
+                <div v-for="movie in paginatedFavorites" :key="movie.id" class="movie-card">
+                    <img v-if="movie.poster_path" :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`" :alt="movie.title" class="poster" />
+                    <div class="card-content">
+                        <h3 class="title">{{ movie.title }}</h3>
+                        <p class="rating">평점: {{ movie.vote_average?.toFixed(1) }} / 10</p>
+                        <button @click="favoritesStore.toggleFavorite(movie)" class="fav-btn active">찜 해제</button>
+                    </div>
+                    <RouterLink :to="`/movies/${movie.id}`" class="stretched-link"></RouterLink>
                 </div>
-                <RouterLink
-                    :to="`/movies/${movie.id}`"
-                    class="stretched-link"
-                    :aria-label="`${movie.title} 상세 정보 보기`"
-                ></RouterLink>
             </div>
-        </div> 
+
+            <div v-if="totalPages > 1" class="pagination-container">
+                <button :disabled="currentPage === 1" @click="currentPage--" class="page-btn arrow-btn">이전</button>
+                <button 
+                    v-for="page in totalPages" 
+                    :key="page" 
+                    @click="currentPage = page"
+                    :class="{ active: currentPage === page }"
+                    class="page-btn num-btn"
+                >
+                    {{ page }}
+                </button>
+                <button :disabled="currentPage === totalPages" @click="currentPage++" class="page-btn arrow-btn">다음</button>
+            </div>
+        </div>
     </main>
 </template>
 
 <style scoped>
-.page {
-    padding: 40px;
-    background-color: #f8f9fa;
-    min-height: 100vh;
-}
-.header-section{
-    margin-bottom: 30px;
-    text-align: center;
-    color: #2c3e50;
-}
-.sub-title {
-    font-size: 14px;
-    color: #7f8c8d;
-    margin-top: 5px;
-}
-.movie-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 30px;
-}
+.page { padding: 40px; background-color: #f8f9fa; min-height: 100vh; }
+.header-section { margin-bottom: 30px; text-align: center; color: #2c3e50; }
+.sub-title { font-size: 14px; color: #7f8c8d; margin-top: 5px; }
+.movie-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 30px; }
 .movie-card{
     position: relative;
     border-radius: 12px;
@@ -175,5 +157,40 @@ onMounted(() => {
     right: 0;
     bottom: 0;
     z-index: 1;
+}
+
+/* [추가 미션 4] 하단 페이지네이션 컴포넌트 스타일링 */
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 5px;
+    padding: 40px 0 20px 0;
+}
+.page-btn {
+    padding: 8px 14px;
+    font-size: 14px;
+    font-weight: 700;
+    border: 1px solid #dee2e6;
+    background-color: #ffffff;
+    color: #495057;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.page-btn:hover:not(:disabled) {
+    background-color: #f1f2f6;
+    border-color: #ced4da;
+}
+.page-btn.active {
+    background-color: #ff4757;
+    color: #ffffff;
+    border-color: #ff4757;
+    box-shadow: 0 4px 10px rgba(255, 71, 87, 0.2);
+}
+.page-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
 }
 </style>

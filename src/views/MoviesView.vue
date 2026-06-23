@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted, ref, computed, watch } from 'vue';
 import { useMovieStore } from '../stores/movieStore.js';
 
 //중앙 금고
@@ -7,6 +7,29 @@ const store = useMovieStore();
 
 onMounted(() => {
     store.fetchMovies();
+});
+
+/* ==========================================================
+   [추가 미션 4] 순수 JS 메서드 기반 영화 목록 페이지네이션 로직
+   ========================================================== */
+const currentPage = ref(1);
+const itemsPerPage = 10;
+
+// [유저 경험 개선] 검색어나 정렬 기준이 변경되면 페이지 번호를 즉시 1페이지로 초기화
+watch(() => [store.searchQuery, store.sortKey, store.sortOrder], () => {
+    currentPage.value = 1;
+});
+
+// 전체 데이터 수를 기반으로 총 페이지 수 산출
+const totalPages = computed(() => {
+    return Math.ceil(store.sortedAndFilteredMovies.length / itemsPerPage);
+});
+
+// 순수 자바스크립트 내장 메서드인 slice()를 사용하여 20개씩 구간 분할 추출
+const paginatedMovies = computed(() => {
+    const start = (currentPage.value - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    return store.sortedAndFilteredMovies.slice(start, end);
 });
 </script>
 
@@ -61,7 +84,7 @@ onMounted(() => {
         </div>
 
         <div v-else class="movie-list">
-            <div v-for="movie in store.sortedAndFilteredMovies" :key="movie.id" class="movie-card">
+            <div v-for="movie in paginatedMovies" :key="movie.id" class="movie-card">
                 <img 
                     v-if="movie.poster_path"
                     :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`" 
@@ -94,7 +117,21 @@ onMounted(() => {
                     :aria-label="`${movie.title} 상세 정보 보기`"
                 ></RouterLink>
             </div>
-        </div> 
+        </div>
+
+        <div v-if="totalPages > 1" class="pagination-container">
+            <button :disabled="currentPage === 1" @click="currentPage--" class="page-btn arrow-btn">이전</button>
+            <button 
+                v-for="page in totalPages" 
+                :key="page" 
+                @click="currentPage = page"
+                :class="{ active: currentPage === page }"
+                class="page-btn num-btn"
+            >
+                {{ page }}
+            </button>
+            <button :disabled="currentPage === totalPages" @click="currentPage++" class="page-btn arrow-btn">다음</button>
+        </div>
     </main>
 </template>
 
@@ -264,5 +301,41 @@ onMounted(() => {
     color: #ffffff;
     border-color: #ff4757;
     box-shadow: 0 4px 10px rgba(255, 71, 87, 0.3);
+}
+
+
+/* [추가 미션 4] 하단 페이지네이션 컴포넌트 스타일링 */
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 5px;
+    padding: 40px 0 20px 0;
+}
+.page-btn {
+    padding: 8px 14px;
+    font-size: 14px;
+    font-weight: 700;
+    border: 1px solid #dee2e6;
+    background-color: #ffffff;
+    color: #495057;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.page-btn:hover:not(:disabled) {
+    background-color: #f1f2f6;
+    border-color: #ced4da;
+}
+.page-btn.active {
+    background-color: #ff4757;
+    color: #ffffff;
+    border-color: #ff4757;
+    box-shadow: 0 4px 10px rgba(255, 71, 87, 0.2);
+}
+.page-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
 }
 </style>
