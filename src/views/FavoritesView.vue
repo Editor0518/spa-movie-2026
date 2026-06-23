@@ -17,7 +17,19 @@ const totalPages = computed(() => {
 const paginatedFavorites = computed(() => {
     const start = (currentPage.value - 1) * itemsPerPage;
     const end = start + itemsPerPage;
-    return favoritesStore.favoriteMovies.slice(start, end);
+
+    // 1. 찜 목록을 역순으로 정렬하여 최신순으로 표시
+    const reversedFavorites = [];
+    const originalList = favoritesStore.favoriteMovies;
+
+    // 2. 찜 목록 뒤집기 (최신순 정렬)
+    for (let i = originalList.length - 1; i >= 0; i--) {
+        // 맨 뒤에 있는 영화부터 새로운 배열에 push()로 밀어 넣습니다.
+        reversedFavorites.push(originalList[i]);
+    }
+    
+    // 3. 최신순으로 정렬된 새 배열에서 20개씩 슬라이싱하여 화면에 반환합니다.
+    return reversedFavorites.slice(start, end);
 });
 
 </script>
