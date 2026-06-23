@@ -24,7 +24,7 @@ export const useMovieStore = defineStore('movies', () => {
         }
         // 대소문자 구분을 없애고 영화 제목(title)에 검색어가 포함되었는지 판별
         return movies.value.filter(movie => 
-            movie.title.toLowerCase().includes(searchQuery.value.toLowerCase())
+            movie.title.toLowerCase().includes(searchQuery.value.trim().toLowerCase())
         );
     });
 
@@ -87,28 +87,32 @@ export const useMovieStore = defineStore('movies', () => {
 
         try {
             const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
+            const allFetchedMovies = [];
 
-            const movieParams = {
-                api_key: API_KEY,
-                language: 'ko-KR',
-                region: 'KR',
-                sort_by: 'popularity.desc',
-                include_adult: false,
-                release_date: '2025-01-01',
-                with_release_type: '2|3',
-                page:1
-            };
-            const response = await axios.get('https://api.themoviedb.org/3/discover/movie', { 
-                params: movieParams 
-            });
-            const fetchedMovies = response.data.results;
-
+            for (let i = 1; i <= 4; i++) {
+                const movieParams = {
+                    api_key: API_KEY,
+                    language: 'ko-KR',
+                    region: 'KR',
+                    sort_by: 'popularity.desc',
+                    include_adult: false,
+                    release_date: '2025-01-01',
+                    with_release_type: '2|3',
+                    page:i
+                };
+                const response = await axios.get('https://api.themoviedb.org/3/discover/movie', { 
+                    params: movieParams 
+                });
+                const fetchedMovies = response.data.results;
+                allFetchedMovies.push(...fetchedMovies);
+            }
+            
             // 3. favoritesStore에 저장된 목록과 비교하여 찜 상태 동기화
-            fetchedMovies.forEach(movie => {
+            allFetchedMovies.forEach(movie => {
                 movie.isFavorite = favoritesStore.favoriteMovies.some(fav => fav.id === movie.id);
             });
 
-            movies.value = fetchedMovies;
+            movies.value = allFetchedMovies;
         } catch (error) {
             errorMessage.value = '영화 정보 데이터를 불러오는 데 실패했습니다.';
         } finally {

@@ -13,7 +13,7 @@ onMounted(() => {
    [추가 미션 4] 순수 JS 메서드 기반 영화 목록 페이지네이션 로직
    ========================================================== */
 const currentPage = ref(1);
-const itemsPerPage = 10;
+const itemsPerPage = 20;
 
 // [유저 경험 개선] 검색어나 정렬 기준이 변경되면 페이지 번호를 즉시 1페이지로 초기화
 watch(() => [store.searchQuery, store.sortKey, store.sortOrder], () => {

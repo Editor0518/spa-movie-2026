@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, computed } from 'vue';
+import { ref, computed } from 'vue';
 import { useFavoritesStore } from '../stores/favorites.js';
 
 const favoritesStore = useFavoritesStore();
@@ -8,7 +8,7 @@ const favoritesStore = useFavoritesStore();
    [추가 미션 4] 찜 목록 전용 20개 구간 슬라이싱 페이지네이션
    ========================================================== */
 const currentPage = ref(1);
-const itemsPerPage = 10;
+const itemsPerPage = 20;
 
 const totalPages = computed(() => {
     return Math.ceil(favoritesStore.favoriteMovies.length / itemsPerPage);
